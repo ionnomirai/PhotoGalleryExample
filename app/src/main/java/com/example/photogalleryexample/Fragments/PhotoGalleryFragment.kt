@@ -1,13 +1,21 @@
 package com.example.photogalleryexample.Fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.photogalleryexample.databinding.FragmentPhotoGalleryBinding
+import com.example.photogalleryexample.retrofit.FlickrApi
+import kotlinx.coroutines.launch
+import retrofit2.Retrofit
+import retrofit2.converter.scalars.ScalarsConverterFactory
+import retrofit2.create
 
+private const val TAG = "PhotoGalleryFragment_TAG"
 class PhotoGalleryFragment : Fragment(){
     private var _binding : FragmentPhotoGalleryBinding? = null
     private val binding
@@ -27,6 +35,20 @@ class PhotoGalleryFragment : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // creating Retrofit instance
+        val retrofit: Retrofit = Retrofit.Builder()
+            .baseUrl("https://www.flickr.com/")
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .build()
+
+        // creating object of FlickrApi interface using Retrofit object
+        val flickrApi: FlickrApi = retrofit.create<FlickrApi>()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            val response = flickrApi.fetchContents()
+            Log.d(TAG, "Response received: $response")
+        }
     }
 
     override fun onDestroyView() {
