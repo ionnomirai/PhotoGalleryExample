@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.photogalleryexample.databinding.FragmentPhotoGalleryBinding
+import com.example.photogalleryexample.repositories.PhotoRepository
 import com.example.photogalleryexample.retrofit.FlickrApi
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
@@ -36,17 +37,9 @@ class PhotoGalleryFragment : Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // creating Retrofit instance
-        val retrofit: Retrofit = Retrofit.Builder()
-            .baseUrl("https://www.flickr.com/")
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .build()
-
-        // creating object of FlickrApi interface using Retrofit object
-        val flickrApi: FlickrApi = retrofit.create<FlickrApi>()
-
         viewLifecycleOwner.lifecycleScope.launch {
-            val response = flickrApi.fetchContents()
+            //val response = PhotoRepository().fetchContents()
+            val response = PhotoRepository().fetchPhotos()
             Log.d(TAG, "Response received: $response")
         }
     }
