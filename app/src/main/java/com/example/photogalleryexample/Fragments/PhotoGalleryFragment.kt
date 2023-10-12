@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.create
+import java.lang.Exception
 
 private const val TAG = "PhotoGalleryFragment_TAG"
 class PhotoGalleryFragment : Fragment(){
@@ -38,9 +39,14 @@ class PhotoGalleryFragment : Fragment(){
         super.onViewCreated(view, savedInstanceState)
 
         viewLifecycleOwner.lifecycleScope.launch {
-            //val response = PhotoRepository().fetchContents()
-            val response = PhotoRepository().fetchPhotos()
-            Log.d(TAG, "Response received: $response")
+            try {
+                //val response = PhotoRepository().fetchContents()
+                val response = PhotoRepository().fetchPhotos()
+                Log.d(TAG, "Response received: $response")
+            }
+            catch (ex: Exception){
+                Log.d(TAG, "Failed to fetch gallery items", ex)
+            }
         }
     }
 
