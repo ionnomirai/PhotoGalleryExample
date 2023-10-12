@@ -24,7 +24,7 @@ class PhotoRepository {
     }
 
     //public function for using GET function Flickr Home page  in another classes
-    //suspend fun fetchContents() = flickrApi.fetchContents()
+    suspend fun fetchContents() = flickrApi.fetchContents()
 
     //get the list of photos
     suspend fun fetchPhotos() : List<GalleryItem> = flickrApi.fetchPhotos().photos.galleryItems
