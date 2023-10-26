@@ -25,7 +25,7 @@ class PhotoGalleryViewModel : ViewModel() {
     init {
         try {
             viewModelScope.launch{
-                val items = photoRepository.fetchPhotos()
+                val items = photoRepository.searchPhotos("planets")
                 Log.d(TAG, "Items received: $items")
                 _galleryItems.value = items
             }
