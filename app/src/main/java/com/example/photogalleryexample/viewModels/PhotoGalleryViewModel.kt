@@ -34,4 +34,19 @@ class PhotoGalleryViewModel : ViewModel() {
             Log.d(TAG, "Failed to fetch gallery items", ex)
         }
     }
+
+    fun setQuery(query: String){
+        viewModelScope.launch { _galleryItems.value = fetchGalleryItems(query) }
+    }
+
+    /*pull photo by query name from user, or default empty call otherwise */
+    private suspend fun fetchGalleryItems(query: String): List<GalleryItem>{
+        return if (query.isNotEmpty()){
+            photoRepository.searchPhotos(query)
+        }
+        else{
+            photoRepository.fetchPhotos()
+        }
+    }
+
 }

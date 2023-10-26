@@ -3,14 +3,20 @@ package com.example.photogalleryexample.Fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.photogalleryexample.R
 import com.example.photogalleryexample.databinding.FragmentPhotoGalleryBinding
 import com.example.photogalleryexample.recyclerView.PhotoListAdapter
 import com.example.photogalleryexample.repositories.PhotoRepository
@@ -33,6 +39,38 @@ class PhotoGalleryFragment : Fragment(){
         }
 
     private val photoGalleryViewModel: PhotoGalleryViewModel by viewModels()
+
+    private val menuProvider = object : MenuProvider{
+        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+            // creating a menu
+            menuInflater.inflate(R.menu.fragment_photo_gallery, menu)
+
+            // This is item in Menu
+            val searchItem: MenuItem = menu.findItem(R.id.menu_item_search)
+            // This is actionView in menuItem
+            val searchView = searchItem.actionView as? SearchView
+
+            // Setting actionView. How this view will respond to a user
+            searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+                // This callback is executed when the user submits a query
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    Log.d(TAG, "QueryTextSubmit: $query")
+                    photoGalleryViewModel.setQuery(query ?: "")
+                    return true
+                }
+
+                // This callback is executed any time text in the SearchView text box changes.
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    Log.d(TAG, "QueryTextChange: $newText")
+                    return false
+                }
+            })
+        }
+
+        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+            return false
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,6 +96,13 @@ class PhotoGalleryFragment : Fragment(){
                 }
             }
         }
+
+        requireActivity().addMenuProvider(menuProvider, viewLifecycleOwner)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.fragment_photo_gallery, menu)
     }
 
     override fun onDestroyView() {
