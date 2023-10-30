@@ -68,7 +68,13 @@ class PhotoGalleryFragment : Fragment(){
         }
 
         override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-            return false
+            when(menuItem.itemId){
+                R.id.menu_item_clear -> {
+                    photoGalleryViewModel.setQuery("")
+                    return true
+                }
+                else -> return false
+            }
         }
     }
 
