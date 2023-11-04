@@ -16,18 +16,24 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.example.photogalleryexample.R
 import com.example.photogalleryexample.databinding.FragmentPhotoGalleryBinding
 import com.example.photogalleryexample.recyclerView.PhotoListAdapter
 import com.example.photogalleryexample.repositories.PhotoRepository
 import com.example.photogalleryexample.retrofit.FlickrApi
 import com.example.photogalleryexample.viewModels.PhotoGalleryViewModel
+import com.example.photogalleryexample.workManager.PollWorker
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.create
 import java.lang.Exception
+import java.time.Duration
 
 private const val TAG = "PhotoGalleryFragment_TAG"
 class PhotoGalleryFragment : Fragment(){
@@ -80,6 +86,28 @@ class PhotoGalleryFragment : Fragment(){
         }
 
 
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        /* - constraints for WorkRequest on Background
+        *  - we commented UNMETERED, because it was hardly tested on emulator.
+        *    instead we added CONNECTED*/
+        val constraints = Constraints.Builder()
+            //.setRequiredNetworkType(NetworkType.UNMETERED)
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        /* - created workRequest, that scheduled Worker */
+        val workRequest = OneTimeWorkRequest
+            .Builder(PollWorker::class.java)
+            .setConstraints(constraints)
+            .build()
+
+        /* Apply workRequest to WorkManager and started work*/
+        WorkManager.getInstance(requireContext())
+            .enqueue(workRequest)
     }
 
     override fun onCreateView(
