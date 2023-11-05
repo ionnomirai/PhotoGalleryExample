@@ -131,6 +131,7 @@ class PhotoGalleryFragment : Fragment(){
                 photoGalleryViewModel.uiState.collect{state ->
                     binding.photoGrid.adapter = PhotoListAdapter(state.images)
                     searchView?.setQuery(state.query, false)
+                    Log.d(TAG, "Changed SearchView")
                 }
             }
         }

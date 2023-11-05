@@ -16,6 +16,7 @@ class PreferencesRepository private constructor(
 ) {
 
     /* Get data from DataStore.
+    * This flow trigger when data by the key SEARCH_QUERY_KEY will be changed.
     * - distinctUntilChanged - Removes data repetition */
     val storedQuery: Flow<String> = dataStore.data.map { preferences ->
         preferences[SEARCH_QUERY_KEY] ?: ""
@@ -28,10 +29,22 @@ class PreferencesRepository private constructor(
         }
     }
 
+    // The flow that will be store last id the picture
+    val lastResultId: Flow<String> = dataStore.data.map {
+        it[PREF_LAST_RESULT_ID] ?: ""
+    }.distinctUntilChanged()
+
+    suspend fun setLastResultId(lastResultId: String){
+        dataStore.edit {
+            it[PREF_LAST_RESULT_ID] = lastResultId
+        }
+    }
+
     // Companion object is needed to get access to keys from any place of the app
     companion object {
         // This is regular key
         private val SEARCH_QUERY_KEY = stringPreferencesKey("search_query")
+        private val PREF_LAST_RESULT_ID = stringPreferencesKey("lastResultId")
         private var INSTANCE: PreferencesRepository? = null
 
         fun initialise(context: Context){
